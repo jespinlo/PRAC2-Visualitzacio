@@ -4,7 +4,7 @@ Aquest programari forma part de la Pràctica 2 de l'assignatura: "Visualització
 
 ## Dataset
 
-El conjunt de dades s' ha obtingut obtenido de Kaggle: ([https://www.kaggle.com/imoore/2020-us-general-election-turnout-rates](https://www.kaggle.com/datasets/technika148/football-database))
+El conjunt de dades s' ha obtingut obtenido de Kaggle: ([https://www.kaggle.com/datasets/technika148/football-database])
 
 ## Codi
 
@@ -19,4 +19,6 @@ Conté el document en pdf que s' ha generat desprès d' executar el fitxer rmd.
 Conté els datasets finals. Com que hi han dos fitxers csv massa grans no s' han pogut carregar en aquest directori i s' ha comprimit una carpeta amb aquest dos fitxers: big csv.zip.
 
 
+## Visualitzacions
 
+Les visualitzacios es poden trobar a : https://public.tableau.com/app/profile/juan.espinoza.lopez/viz/PRAC2-Visualitzacio/Dashboard9 
