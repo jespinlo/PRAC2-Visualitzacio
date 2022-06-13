@@ -1,1 +1,182 @@
+---
+title: "Pràctica 2: Creació de la visualització i lliurament del projecte"
+subtitle: 'VisualiTzació de dades, Universitat Oberta de Catalunya'
+author: "Juan Luis Espinoza López"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+    extra_dependencies: ["float"]
+  html_document:
+    toc: yes
+    toc_depth: 2
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+
+```
+
+
+\newpage
+
+## Anàlisi exploratòria
+
+Primer de tot instal·lem i carreguem les llibreries ggplot2 i dplry.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# https://cran.r-project.org/web/packages/ggplot2/index.html
+if (!require('ggplot2')) install.packages('ggplot2'); library('ggplot2')
+# https://cran.r-project.org/web/packages/dplyr/index.html
+if (!require('dplyr')) install.packages('dplyr'); library('dplyr')
+# https://cran.r-project.org/web/packages/dplyr/index.html
+if (!require('stringr')) install.packages('stringr'); library('stringr')
+```
+El primer pas per realitzar un anàlisi exploratòria es carreggar els fitxer de dades que anem a utilitzar
+
+```{r}
+path_games = '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/games.csv'
+games <- read.csv(path_games,stringsAsFactors = FALSE)
+rows=dim(games)[1]
+```
+```{r}
+structure = str(games)
+```
+```{r}
+path_leagues = '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/leagues.csv'
+leagues <- read.csv(path_leagues,stringsAsFactors = FALSE)
+rows=dim(leagues)[1]
+```
+```{r}
+structure = str(leagues)
+```
+```{r}
+path_players = '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/players.csv'
+players <- read.csv(path_players,stringsAsFactors = FALSE)
+rows=dim(players)[1]
+```
+```{r}
+structure = str(players)
+```
+
+```{r}
+path_teams= '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/teams.csv'
+teams <- read.csv(path_teams, stringsAsFactors = FALSE)
+rows=dim(teams)[1]
+```
+```{r}
+structure = str(teams)
+```
+
+```{r}
+path_shots= '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/shots.csv'
+shots <- read.csv(path_shots, stringsAsFactors = FALSE)
+rows=dim(shots)[1]
+```
+```{r}
+structure = str(shots)
+```
+```{r}
+path_appearances= '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/appearances.csv'
+appearances <- read.csv(path_appearances, stringsAsFactors = FALSE)
+rows=dim(appearances)[1]
+```
+```{r}
+structure = str(appearances)
+```
+
+```{r}
+path_teamstats= '/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/teamstats.csv'
+teamstats <- read.csv(path_teamstats, stringsAsFactors = FALSE)
+rows=dim(teamstats)[1]
+```
+```{r}
+structure = str(teamstats)
+```
+
+
+## Gestió de dades invàlides
+Per comprovar quines columnes contenen dades 'buides' i poder-hi treballar, utilitzarem la funció colSums, que aplica una funció a totes les columnes d'un dataframe i després aplica una suma.
+```{r}
+colSums(is.na(games))
+```
+Veiem que hi han un grup de columnes que contenen dades buides. Com que aquestes columnes no ens interesan per a les futures visualitzacions les anem a eliminar. 
+```{r}
+games<- games[1:13]
+colSums(is.na(games))
+```
+```{r}
+colSums(is.na(leagues))
+```
+```{r}
+colSums(is.na(players))
+```
+```{r}
+colSums(is.na(teams))
+```
+
+```{r}
+colSums(is.na(shots))
+```
+En aquest cas veiem que tenim a la columna asssiterID un nombre significant de dades buides pero des de el punt de vista futbolistic aixó és molt normal ja que hi ha xuts que son de jugada individual del jugador en el cual no es requereix cap passador.
+
+```{r}
+colSums(is.na(appearances))
+```
+```{r}
+colSums(is.na(teamstats))
+```
+
+```{r}
+#Creem un nou csv file amb les dades games final
+write.csv(games, "games_2.csv",  row.names = FALSE)
+```
+
+```{r}
+ tbls = c("leagues", "players", "teams", "games_2", "shots", "appearances", "teamstats")
+ 
+for (tbl in tbls) {
+    varName = str_c(tbl, "tbl", sep = ".")
+   df = read.csv(str_c("/Users/jespinlo10/Documents/Master/2on Semestre/Visualizacion/PRAC1/archive/", tbl, ".csv", sep = ""), 
+                 stringsAsFactors = FALSE,
+                 encoding = "latin1")
+   assign(varName, df)
+}
+
+```
+En total tenim set taules, que inclou informació sobre tots els partits jugats del 2014 al 2020 a les lligues Top 5 d'Europa
+
+```{r}
+metaData = tibble()
+for (i in 1:length(tbls)) {
+  currTbl = get(paste(tbls[i], ".tbl", sep = ""))
+  
+  metaData = rbind(metaData, t(c(paste(tbls[i], ".tbl", sep = ""), length(currTbl), nrow(currTbl))))
+}
+names(metaData) = c("tableName", "variables", "observations")
+
+knitr::kable(metaData)
+
+```
+
+## Les lligues i les seves diferències
+Com ja s'ha esmentat, la base de dades conté informació sobre les lligues Top 5 d'Europa, incloses la Premier League (Anglaterra), La Liga (Espanya), la Bundesliga (Alemanya), la Sèrie A (Itàlia) i la Ligue 1 (França). Com que ja sabem quants equips participen a cada competició i que cada equip juga amb tots els seus rivals dues vegades (una a casa i una a fora), podem comprovar la integritat de la taula de jocs mirant el nombre de partits per lliga i temporada. Hauríem d'obtenir els següents resultats:
+
+* Premier League: 20 equips i per tant 380 partits
+
+* La Lliga: 20 equips i per tant 380 partits
+
+* Sèrie A: 20 equips i per tant 380 partits
+
+* Bundesliga: 18 equips i per tant 306 partits
+
+* Lliga 1: 20 equips i per tant 380 partits
+
+Tanmateix, després d'agregar el nombre de partits per temporada i lliga i filtrar les quantitats "normals", podem observar alguns valors estranys.
+
+El motiu dels partits perduts de la 2019/20 a la Ligue 1 va ser que el 13 de març de 2020, la LFP (Ligue de Football Professionnel) va suspendre la Ligue 1 indefinidament després de l'esclat de la COVID-19 a França. Totes les altres lligues van continuar jugant després d'un confinament paneuropeu entre març i juny, mentre que els francesos van decidir aturar completament la competició. No obstant això, això no explica l'absència d'aquell partit la 2016/17. El 16 d'abril de 2017, quan l'SC Bastia es va enfrontar amb l'Olympique de Lió, el partit es va suspendre a causa dels seguidors locals, que van envair el terreny de joc dues vegades per atacar als jugadors contraris.
+
+Amb aquest analísis tenim ja els datasets finals per crear visualitzacions que ens donin resposta a las preguntes plantejades a la PRAC1. Per dur a terme la creació de visualitzacions s' utilitzarà public tableau.
 
