@@ -16,7 +16,7 @@ Conté el document en pdf que s' ha generat desprès d' executar el fitxer rmd.
 
 ## Fitxers
 
-Conté els datasets finals. Com que hi han dos fitxers csv massa grans no s' han pogut carregar en aquest directori i s' ha comprimit una carpeta amb aquest dos fitxers: bif csv.zip.
+Conté els datasets finals. Com que hi han dos fitxers csv massa grans no s' han pogut carregar en aquest directori i s' ha comprimit una carpeta amb aquest dos fitxers: big csv.zip.
 
 
 
